@@ -1,0 +1,45 @@
+# Deploys the backend/ workspace only. The frontend goes to Vercel.
+#
+# Commands run from the repo root rather than backend/, because npm workspaces
+# keeps a single lockfile at the root — `npm ci` inside backend/ would find no
+# lockfile and fail.
+services:
+  - type: web
+    name: dailyquill-api
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    # --include=dev is required: NODE_ENV=production makes npm skip
+    # devDependencies, and the build needs typescript from there.
+    buildCommand: npm ci --include=dev && npm run build --workspace backend
+    startCommand: npm run start --workspace backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render injects PORT itself; backend/src/config/env.ts reads process.env.PORT.
+      - key: TOKEN_EXPIRY
+        value: 7d
+      # Everything below is secret or environment-specific — set the values in the
+      # Render dashboard, not here. sync:false keeps them out of source control.
+      - key: CORS_ORIGINS
+        sync: false
+      - key: COOKIE_DOMAIN
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: TOKEN_SECRET
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: AIML_API_KEY
+        sync: false

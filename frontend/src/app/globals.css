@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * One light palette — no dark theme.
+   *
+   * Indigo brand on a soft off-white ground, matching the original design.
+   * The page tint is very slightly cool rather than pure #fff so white cards
+   * read as raised surfaces instead of dissolving into the background.
+   */
+  :root {
+    --dq-bg: 250 251 253;
+    --dq-surface: 255 255 255;
+    --dq-surface-muted: 244 245 248;
+    --dq-border: 226 229 235;
+    --dq-text: 17 24 39;
+    --dq-text-muted: 107 114 128;
+    --dq-brand: 99 102 241;
+    --dq-brand-strong: 79 70 229;
+    --dq-danger: 220 38 38;
+  }
+
+  html {
+    /* Tells the browser to keep its own form controls and scrollbars light,
+       even when the operating system is set to dark. */
+    color-scheme: light;
+    scroll-behavior: smooth;
+    /* Stops the page shifting sideways when a scrollbar appears — a common
+       source of CLS on route changes. */
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--dq-bg));
+    color: rgb(var(--dq-text));
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Media keeps its intrinsic box so images never reflow the layout. */
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--dq-brand));
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Viewport height that accounts for mobile browser chrome. */
+  .h-dvh-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .min-h-dvh-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Keeps fixed bars clear of the iOS home indicator.
+   *
+   * This sits in the same cascade layer as Tailwind's `py-*` and is emitted
+   * after it, so it wins on any element that pairs the two. Declaring a bare
+   * `env()` therefore *replaced* the element's bottom padding with 0 anywhere
+   * there is no inset — every desktop browser and most Android ones — which is
+   * why footers looked flush against the bottom edge. The inset is now added
+   * on top of a base the element opts into with `--dq-safe-pb`. */
+  .pb-safe {
+    padding-bottom: calc(var(--dq-safe-pb, 0px) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* One shared shimmer so a loading screen doesn't run dozens of animations. */
+  .dq-skeleton {
+    @apply relative overflow-hidden bg-[rgb(var(--dq-surface-muted))];
+  }
+
+  .dq-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.6),
+      transparent
+    );
+    animation: dq-shimmer 1.4s infinite;
+  }
+
+  @keyframes dq-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
