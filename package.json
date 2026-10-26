@@ -18,6 +18,9 @@
     "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
     "lint": "npm run lint --workspace frontend"
   },
+  "overrides": {
+    "body-parser": "2.4.0"
+  },
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
