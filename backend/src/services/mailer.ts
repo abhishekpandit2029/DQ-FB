@@ -1,10 +1,10 @@
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 import { env } from "../config/env";
 
 const DEFAULT_LOGO =
   "https://res.cloudinary.com/dsrkyrgpn/image/upload/v1729079643/dailyquill-logo.png";
 
-let transporter: nodemailer.Transporter | null = null;
+let transporter: Transporter | null = null;
 
 function getTransporter() {
   if (!transporter) {
