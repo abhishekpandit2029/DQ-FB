@@ -13,7 +13,16 @@ export function createApp() {
   // Required for secure cookies and correct client IPs behind a proxy/CDN.
   app.set("trust proxy", 1);
 
-  app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+  // Helmet 8 dropped these headers from its defaults. Opt back in so the
+  // responses keep the same security headers they had before the upgrade.
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+      xXssProtection: true,
+      xDnsPrefetchControl: true,
+      xDownloadOptions: true,
+    })
+  );
 
   app.use(
     cors({
